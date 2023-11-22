@@ -34,16 +34,16 @@ class Var_SimonGame {
     }
 }
 
-function flashButton(button) {
+function flashElement(element) {
     // button.fadeOut(100).fadeIn(100);
-    button.addClass("pressed");
+    element.addClass("pressed");
     setTimeout(() => {
-        button.removeClass("pressed");
+        element.removeClass("pressed");
     }, 100);
 }
 
 function playSound(color) {
-    const soundFile = `./sounds/${color}.mp3`;
+    const soundFile = `./assets/sounds/${color}.mp3`;
 
     switch (color) {
         case "blue":
@@ -63,7 +63,7 @@ function playSound(color) {
 
 async function State_StartingState() {
     $("body").removeClass("game-over");
-    $("h1").text("Press a Key to Start");
+    $("h1").text("Click Here to Start.");
 
     state = State_UpdateHeader;
 }
@@ -82,7 +82,7 @@ async function State_DisplayColorSequence() {
     for (var i=0; i<gamePattern.length; i++) {
         const selector = `button#${gamePattern[i]}`;
         await sleep(300);
-        flashButton($(selector));
+        flashElement($(selector));
         playSound(gamePattern[i]);
     }
 
@@ -91,7 +91,7 @@ async function State_DisplayColorSequence() {
 
 async function State_DisplayChosenColor() {
     const selector = `button#${gameVar.chosenPattern[gameVar.chosenPattern.length - 1]}`;
-    flashButton($(selector));
+    flashElement($(selector));
 
     state = State_CheckUserInput;
 }
@@ -153,9 +153,7 @@ async function State_CheckUserInput() {
 }
 
 async function State_PlayWrongSound() {
-    const wrongSound = "./sounds/wrong.mp3";
-    const audio = new Audio(wrongSound);
-    audio.play();
+    playSound("wrong");
 
     state = State_ShowWrongAnswer;
 }
@@ -167,7 +165,7 @@ async function State_ShowWrongAnswer() {
 async function State_GameOver() {
     $("body").addClass("game-over");
 
-    $("h1").text(`Game Over. Score: ${gameVar.currentLevel}. Press any key to restart.`);
+    $("h1").text(`Game Over. Score: ${gameVar.currentLevel}. Click here to restart.`);
 
     setTimeout(() => {
         $("body").removeClass("game-over");
@@ -197,4 +195,9 @@ async function playGame() {
     }
 }
 
-$(document).on("keydown", playGame);
+$("h1").on("click", function () {
+    if (!gameVar.playingGame) {
+        flashElement($(this));
+        playGame();
+    }
+});
